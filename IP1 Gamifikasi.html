@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravox Navigate - Ruang Aman Bicara</title>
+    <style>
+        /* CSS Reset & Variables */
+        :root {
+            --bg-dark: #0a0a0f;
+            --panel-bg: rgba(20, 20, 30, 0.85);
+            --cyan: #00f3ff;
+            --magenta: #ff00e6;
+            --green: #39ff14;
+            --red: #ff3333;
+            --text-main: #e0e0e0;
+            --text-muted: #888899;
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --border-glow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px 10px;
+        }
+
+        /* Container & Screens */
+        #game-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 12px;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px 20px;
+            flex: 1;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Top Bar UI */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid var(--cyan);
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .audio-btn {
+            background: none;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Typography & Elements */
+        h1, h2, h3 {
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+        }
+
+        h1 { color: var(--cyan); font-size: 1.8rem; text-align: center; text-shadow: 0 0 8px var(--cyan); }
+        h2 { color: var(--magenta); font-size: 1.2rem; }
+
+        p { line-height: 1.6; margin-bottom: 20px; font-size: 0.95rem; }
+
+        .hook-box {
+            border-left: 4px solid var(--magenta);
+            padding: 10px 15px;
+            background: rgba(255, 0, 230, 0.05);
+            font-style: italic;
+            margin-bottom: 25px;
+        }
+
+        /* Forms & Inputs */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--cyan);
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+        }
+
+        /* Buttons */
+        .btn-cyber {
+            background: transparent;
+            color: var(--cyan);
+            border: 2px solid var(--cyan);
+            padding: 15px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            margin-top: auto;
+        }
+        .btn-cyber:hover {
+            background: var(--cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--cyan);
+        }
+
+        /* Game Mechanics UI */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+            transition: width 0.4s ease;
+        }
+
+        .badges-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .badge.unlocked {
+            border-color: var(--magenta);
+            color: var(--magenta);
+            text-shadow: 0 0 5px var(--magenta);
+            box-shadow: 0 0 5px rgba(255, 0, 230, 0.2);
+        }
+
+        /* Dialog Cards */
+        .card-perspective {
+            perspective: 1000px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .opt-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1.4;
+        }
+        .opt-btn:hover {
+            border-color: var(--cyan);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        /* Feedback Flip State */
+        .feedback-view {
+            display: none;
+            animation: flipIn 0.5s ease-out;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid;
+            border-radius: 8px;
+            padding: 20px;
+            flex-direction: column;
+            gap: 15px;
+        }
+        @keyframes flipIn {
+            0% { transform: rotateX(-90deg); opacity: 0; }
+            100% { transform: rotateX(0); opacity: 1; }
+        }
+        
+        .feedback-title { font-weight: bold; font-size: 1.1rem; }
+        .feedback-desc { font-size: 0.9rem; line-height: 1.5; color: #ccc; }
+        
+        .fb-correct { border-color: var(--green); }
+        .fb-correct .feedback-title { color: var(--green); }
+        .fb-wrong { border-color: var(--red); }
+        .fb-wrong .feedback-title { color: var(--red); }
+
+        /* Debrief Screen */
+        .result-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            border: 1px solid var(--magenta);
+            margin-bottom: 20px;
+        }
+        .score-display {
+            font-size: 3rem;
+            color: var(--cyan);
+            font-weight: bold;
+            text-shadow: 0 0 15px var(--cyan);
+            margin: 10px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Top Bar (Hidden on Gateway) -->
+        <div class="top-bar" id="topBar" style="display: none;">
+            <div class="status-text" id="playerStatus">SYS.OP: ---</div>
+            <button class="audio-btn" id="audioToggle">🔊 SOUND ON</button>
+        </div>
+
+        <!-- SCREEN 1: Gateway -->
+        <div class="screen active" id="screenGateway">
+            <h1>GRAVOX NAVIGATE</h1>
+            <h2>// Ruang Aman Bicara</h2>
+            
+            <div class="hook-box">
+                "Pura-pura ngerti = kerja dua kali. Takut terlihat bodoh justru bikin kita blunder. Saatnya mengubah ketakutan menjadi kendali."
+            </div>
+
+            <div class="input-group">
+                <label>NAMA OPERATOR</label>
+                <input type="text" id="inputNama" placeholder="Masukkan Nama Anda" required autocomplete="off">
+            </div>
+
+            <button class="btn-cyber" onclick="goToBriefing()">Inisialisasi Sistem</button>
+            <div class="footer">Education & Training Dept. &copy; 2026</div>
+        </div>
+
+        <!-- SCREEN 2: Briefing -->
+        <div class="screen" id="screenBriefing">
+            <h2>// MISSION BRIEFING</h2>
+            <p>Selamat datang, <span id="briefNama" style="color:var(--cyan)"></span>.</p>
+            <p>Di lingkungan kantor yang serba cepat, seringkali aturan berubah dan instruksi terasa ambigu. Anda memiliki dua pilihan:</p>
+            <ul style="margin-left: 20px; margin-bottom: 20px; color: #ccc; font-size: 0.9rem;">
+                <li style="margin-bottom: 8px;">Diam dan menebak-nebak (Beresiko blunder)</li>
+                <li>Menciptakan <b>Ruang Aman</b> dengan bertanya secara profesional.</li>
+            </ul>
+            
+            <div class="hook-box" style="border-color: var(--cyan); background: rgba(0,243,255,0.05);">
+                <b>OBJECTIVE:</b> Latih refleks pemilihan diksi Anda. Gunakan 3 Jurus: Riset Mandiri, I-Statement (fokus ke solusi), dan Konfirmasi Ulang.
+            </div>
+
+            <button class="btn-cyber" onclick="startGame()">Mulai Simulasi</button>
+            <div class="footer">Education & Training Dept. &copy; 2026</div>
+        </div>
+
+        <!-- SCREEN 3: Core Execution -->
+        <div class="screen" id="screenCore">
+            <div class="badges-container">
+                <div class="badge" id="badge1">🔰 Pemula</div>
+                <div class="badge" id="badge2">🛡️ Diplomat</div>
+                <div class="badge" id="badge3">👑 Master Komunikasi</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--cyan); margin-bottom: 5px;">
+                <span>PROGRESS</span>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="card-perspective">
+                <div id="questionView">
+                    <div class="card">
+                        <h3 style="color:var(--cyan); font-size:1rem;">Situasi <span id="qNumber">1</span></h3>
+                        <p id="scenarioText">Memuat skenario...</p>
+                    </div>
+                    <div class="options" id="optionsContainer">
+                        <!-- Options generated via JS -->
+                    </div>
+                </div>
+
+                <div class="feedback-view" id="feedbackView">
+                    <div class="feedback-title" id="fbTitle">Status</div>
+                    <div class="feedback-desc" id="fbDesc">Penjelasan</div>
+                    <button class="btn-cyber" style="margin-top: 15px;" onclick="nextQuestion()">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: Debrief -->
+        <div class="screen" id="screenDebrief">
+            <h2>// POST-ACTION DEBRIEF</h2>
+            <div class="result-box">
+                <div style="font-size: 0.9rem; color: var(--text-muted);">Skor Validasi Komunikasi</div>
+                <div class="score-display" id="finalScore">0</div>
+                <div id="resultStatus" style="font-weight: bold; color: var(--magenta);">STATUS: MENUNGGU</div>
+            </div>
+
+            <p id="feedbackSummary" style="font-size: 0.9rem; text-align: center; color: #ccc; margin-bottom: 25px;"></p>
+
+            <button class="btn-cyber" onclick="location.reload()">Ulangi Simulasi</button>
+            <div class="footer">Education & Training Dept. &copy; 2026</div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA MATERI (10 Soal berdasarkan PDF) ---
+        const scenarios = [
+            { // 1. Riset Mandiri (Mudah)
+                scenario: "Ada SOP baru soal penerimaan barang. Anda sudah membaca panduannya, tapi ada satu poin terkait tanda tangan ganda yang masih membingungkan Anda.",
+                options: [
+                    { text: "Pak, ini sistem barunya ribet banget. Gimana sih cara pakainya? Saya pusing.", correct: false, desc: "Kurang tepat. (The Cerewet Style). Ini terdengar seperti mengeluh dan menjadikan atasan sebagai Google pribadi Anda." },
+                    { text: "Maaf Pak, saya sudah baca panduannya, tapi ada bagian 'Tanda Tangan Ganda' yang belum jelas. Mohon bantuannya untuk dijelaskan pada bagian ini.", correct: true, desc: "Tepat! (Jurus 1: Riset Mandiri). Anda menunjukkan inisiatif dengan membaca dulu, lalu bertanya spesifik pada bagian yang membingungkan." },
+                    { text: "Kerjain sesuai tebakan saya aja deh, yang penting cepet selesai.", correct: false, desc: "Salah Fatal. Ini adalah sumber blunder. Pura-pura ngerti = kerja dua kali." }
+                ]
+            },
+            { // 2. Timing / Safety Net (Mudah)
+                scenario: "Anda mengalami kendala teknis, tapi saat Anda menoleh ke meja atasan, beliau sedang menelepon dengan dahi berkerut dan mengetik dengan cepat.",
+                options: [
+                    { text: "Langsung menghampiri mejanya dan berkata: 'Pak, maaf ini mendesak, sistemnya error!'", correct: false, desc: "Kurang tepat. Timing yang buruk bisa membuat niat baik Anda dianggap sebagai gangguan atau keluhan." },
+                    { text: "Diam saja sampai besok, menunggu atasan menegur kenapa pekerjaan belum selesai.", correct: false, desc: "Salah. Menunda pekerjaan tanpa komunikasi akan merugikan operasional." },
+                    { text: "Mengirim pesan singkat: 'Pak, saya ada kendala teknis di bagian X. Kapan Bapak ada waktu luang 5 menit untuk saya tanyakan?'", correct: true, desc: "Sangat Profesional! (Safety Net). Anda menghargai waktu atasan namun tetap proaktif menyelesaikan masalah." }
+                ]
+            },
+            { // 3. I-Statement (Mudah)
+                scenario: "Perusahaan mengeluarkan kebijakan baru yang terasa membatasi kenyamanan tim di lapangan. Anda butuh penjelasan cara mengaplikasikannya tanpa merusak ritme kerja.",
+                options: [
+                    { text: "Pak, aturan baru ini mencekik banget buat tim lapangan. Bisa direvisi nggak?", correct: false, desc: "Kurang tepat. Terlalu konfrontatif. Atasan akan bersikap defensif." },
+                    { text: "Saya ingin memastikan alur baru ini supaya kerjaan tim di lapangan tetap lancar. Bisa kita diskusikan cara implementasinya?", correct: true, desc: "Sempurna! (Jurus 2: I-Statement). Fokus pada 'kelancaran tugas/solusi', bukan pada komplain kenyamanan." },
+                    { text: "Nggak usah diikutin aturannya, yang penting target lapangan tercapai.", correct: false, desc: "Salah. Mengabaikan SOP akan menciptakan masalah integritas di kemudian hari." }
+                ]
+            },
+            { // 4. Konfirmasi Ulang (Sedang)
+                scenario: "Atasan baru saja menjelaskan alur kerja secara lisan dengan sangat cepat. Anda paham sebagian besar, tapi ingin memastikan tidak ada yang terlewat.",
+                options: [
+                    { text: "Berarti untuk poin X ini, langkahnya adalah A baru ke B ya Pak? Baik, saya pastikan tim jalankan sesuai instruksi.", correct: true, desc: "Tepat! (Jurus 3: Konfirmasi Ulang). Active listening memberi rasa aman kepada atasan bahwa informasinya ditangkap dengan benar." },
+                    { text: "Noted Pak, siap laksanakan. (Sambil mengangguk meski dalam hati ragu).", correct: false, desc: "Kurang tepat. Ini kebiasaan lama yang berbahaya. Jika ada yang terlewat, Anda yang akan disalahkan." },
+                    { text: "Bapak ngomongnya kecepetan, bisa diulangi dari awal pelan-pelan?", correct: false, desc: "Kurang tepat. Terkesan tidak fokus. Lebih baik validasi bagian spesifik yang Anda tangkap." }
+                ]
+            },
+            { // 5. Knowing the "Why" (Sedang)
+                scenario: "Anda diberikan tugas mendadak untuk mengubah format laporan, tetapi tidak dijelaskan apa tujuan perubahan tersebut.",
+                options: [
+                    { text: "Boleh dielaborasi kenapa format ini diubah? Agar saya paham tujuannya dan bisa menyesuaikan data yang relevan dengan lebih akurat.", correct: true, desc: "Brilian! Anda mencari tahu 'Kenapa', bukan cuma 'Gimana'. Paham tujuan (WHY) membuat Anda bisa mengambil keputusan cepat jika ada kendala." },
+                    { text: "Wah format baru lagi? Ya sudah, form lama buang saja.", correct: false, desc: "Kurang tepat. Anda mengeksekusi tanpa tahu arah. Seperti mendayung perahu tanpa GPS." },
+                    { text: "Kerjakan saja persis seperti formatnya, tanpa memikirkan isi datanya masuk akal atau tidak.", correct: false, desc: "Salah. Ini mentalitas robot, bukan leader yang solutif." }
+                ]
+            },
+            { // 6. Istilah Teknis (Sedang)
+                scenario: "Di tengah meeting divisi, manajer menggunakan istilah teknis bahasa Inggris yang baru pertama kali Anda dengar, dan itu berkaitan dengan KPI Anda.",
+                options: [
+                    { text: "Maaf Pak, saya bodoh soal istilah Inggris, itu artinya apa ya?", correct: false, desc: "Hindari merendahkan diri sendiri ('saya bodoh'). Ini menurunkan psychological safety Anda sendiri." },
+                    { text: "Diam saja. Nanti tanya teman di pantry atau Googling sendiri saja.", correct: false, desc: "Berbahaya. Teman Anda mungkin juga salah paham. Googling mungkin memberikan konteks yang berbeda dari maksud perusahaan." },
+                    { text: "Menarik Pak. Untuk memastikan eksekusi saya akurat, bolehkah dielaborasi sedikit mengenai istilah teknis tersebut dalam konteks kita?", correct: true, desc: "Sangat Profesional! Anda membingkai ketidaktahuan sebagai upaya 'memastikan eksekusi akurat'." }
+                ]
+            },
+            { // 7. Burnout & Support (Sulit)
+                scenario: "Pekerjaan menumpuk. Anda butuh support mental dari atasan agar tetap fokus dan tidak burnout, tapi Anda takut terlihat lemah/tidak kompeten.",
+                options: [
+                    { text: "Boleh kita diskusi 10 menit? Saya butuh perspektif Bapak untuk memprioritaskan task ini agar fokus saya tetap di hasil utama.", correct: true, desc: "Hebat! Anda memegang kendali atas kondisi Anda dan mengundang support dengan elegan, menggunakan kata 'prioritas' dan 'perspektif'." },
+                    { text: "Saya udah nyerah Pak. Beban ini terlalu berat, tolong kurangi kerjaan saya.", correct: false, desc: "Kurang tepat. Ini adalah keluhan emosional (venting) yang bisa memicu kepanikan operasional." },
+                    { text: "Bekerja sampai larut malam setiap hari dalam diam, sampai akhirnya jatuh sakit.", correct: false, desc: "Sangat tidak disarankan. Menyimpan masalah sendiri justru menguras energi dan merugikan tim jangka panjang." }
+                ]
+            },
+            { // 8. Takut Dianggap Cerewet (Sulit)
+                scenario: "Anda punya beberapa pertanyaan tentang project baru. Anda takut atasan merasa Anda 'banyak nanya' dan cerewet.",
+                options: [
+                    { text: "Menanyakan pertanyaan tersebut satu per satu setiap 30 menit ke meja atasan.", correct: false, desc: "Ini yang membuat Anda dicap cerewet dan mengganggu fokus kerja atasan." },
+                    { text: "Mengelompokkan pertanyaan, merangkumnya, lalu meminta waktu: 'Pak, saya sudah petakan alurnya, ada 3 poin yang butuh validasi Bapak. Kapan bisa diskusi?'", correct: true, desc: "Tepat! Terstruktur, hemat waktu, dan mendarat dengan tepat sasaran. Atasan akan respek pada efisiensi Anda." },
+                    { text: "Menghapus semua pertanyaan dan memilih trial-and-error saja di lapangan.", correct: false, desc: "Sangat beresiko. Trial and error tanpa arahan dasar pada project baru akan menghabiskan cost/waktu perusahaan." }
+                ]
+            },
+            { // 9. Perubahan Mendadak (Sulit)
+                scenario: "Terjadi perubahan arah kebijakan di tengah jalan. Atasan memberi instruksi singkat. Di kepala Anda banyak sekali pertanyaan 'Kenapa?'.",
+                options: [
+                    { text: "Pak, kok mencla-mencle sih kebijakannya? Bikin kita di bawah kerja dua kali aja.", correct: false, desc: "Hindari sikap reaktif dan menyerang. Ini menutup ruang komunikasi yang aman." },
+                    { text: "Menghela napas panjang di depan atasan lalu berkata 'Ya udah lah, dicoba dulu aja'.", correct: false, desc: "Gesture dan nada bicara pasif-agresif ini merusak moral tim." },
+                    { text: "Baik Pak, arah perubahannya sudah saya tangkap. Boleh saya tahu konteks utama perubahannya agar saya bisa bantu jelaskan ke tim di bawah?", correct: true, desc: "Luar biasa! Anda memposisikan diri sebagai partner strategis yang siap menjembatani komunikasi ke bawahan." }
+                ]
+            },
+            { // 10. The Ultimate Reflex (Sulit)
+                scenario: "Skenario Puncak: Atasan sedang terburu-buru mau pergi meeting di luar kantor, sambil berjalan ia mendelegasikan tugas penting ke Anda yang belum pernah Anda kerjakan.",
+                options: [
+                    { text: "Menahan atasan secara fisik: 'Tunggu dulu Pak, saya nggak ngerti sama sekali ini!'", correct: false, desc: "Tidak profesional. Memblokir jalan orang yang sedang buru-buru memicu emosi negatif." },
+                    { text: "Baik Pak. Saya pelajari dulu garis besarnya. Kalau ada kendala fundamental, saya WA ya Pak agar eksekusi tetap jalan.", correct: true, desc: "Sempurna! Anda memberikan rasa aman bahwa 'eksekusi tetap jalan', namun tetap membuat safety net via komunikasi tertulis." },
+                    { text: "Mengiyakan saja. Lalu melempar tugas tersebut ke bawahan Anda tanpa instruksi jelas.", correct: false, desc: "Anda memindahkan kebingungan ke orang lain. Rantai masalah akan berlanjut." }
+                ]
+            }
+        ];
+
+        // --- GAME STATE ---
+        let playerName = "";
+        let currentQIndex = 0;
+        let score = 0;
+        let isAudioOn = true;
+
+        // --- WEB AUDIO API ENGINE ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let bgmOscillator = null;
+        let bgmGain = null;
+        let bgmInterval = null;
+
+        function playTone(freq, type, duration, vol=0.1) {
+            if (!isAudioOn || audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playSfx(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if(type === 'click') {
+                playTone(800, 'sine', 0.1, 0.1);
+            } else if (type === 'correct') {
+                playTone(600, 'sine', 0.1, 0.2);
+                setTimeout(() => playTone(800, 'sine', 0.3, 0.2), 100);
+            } else if (type === 'wrong') {
+                playTone(300, 'sawtooth', 0.2, 0.2);
+                setTimeout(() => playTone(200, 'sawtooth', 0.3, 0.2), 150);
+            } else if (type === 'badge') {
+                playTone(400, 'square', 0.1, 0.1);
+                setTimeout(() => playTone(600, 'square', 0.1, 0.1), 100);
+                setTimeout(() => playTone(1000, 'sine', 0.5, 0.2), 200);
+            }
+        }
+
+        function startBgm() {
+            if (!isAudioOn) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const bassNotes = [110, 110, 130, 98]; // A2, A2, C3, G2 (Cyberpunk vibe)
+            let noteIdx = 0;
+
+            bgmInterval = setInterval(() => {
+                if(!isAudioOn) return;
+                playTone(bassNotes[noteIdx], 'square', 0.4, 0.03); // Low volume bass
+                noteIdx = (noteIdx + 1) % bassNotes.length;
+            }, 500); // 120 BPM
+        }
+
+        function toggleAudio() {
+            isAudioOn = !isAudioOn;
+            document.getElementById('audioToggle').innerText = isAudioOn ? "🔊 SOUND ON" : "🔇 SOUND OFF";
+            if(isAudioOn) {
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+            }
+            playSfx('click');
+        }
+
+        document.getElementById('audioToggle').addEventListener('click', toggleAudio);
+
+        // --- CORE LOGIC ---
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goToBriefing() {
+            playerName = document.getElementById('inputNama').value.trim();
+
+            if (!playerName) {
+                alert("Mohon masukkan Nama Anda.");
+                return;
+            }
+            
+            playSfx('click');
+            document.getElementById('briefNama').innerText = playerName;
+            document.getElementById('playerStatus').innerText = `SYS.OP: ${playerName.substring(0,8).toUpperCase()}`;
+            document.getElementById('topBar').style.display = 'flex';
+            switchScreen('screenBriefing');
+            startBgm();
+        }
+
+        function startGame() {
+            playSfx('click');
+            currentQIndex = 0;
+            score = 0;
+            switchScreen('screenCore');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = scenarios[currentQIndex];
+            document.getElementById('qNumber').innerText = `${currentQIndex + 1} / ${scenarios.length}`;
+            document.getElementById('scenarioText').innerText = q.scenario;
+            
+            const optContainer = document.getElementById('optionsContainer');
+            optContainer.innerHTML = '';
+            
+            // Shuffle options slightly (simple logic)
+            let options = [...q.options].sort(() => Math.random() - 0.5);
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => selectOption(opt);
+                optContainer.appendChild(btn);
+            });
+
+            document.getElementById('questionView').style.display = 'block';
+            document.getElementById('feedbackView').style.display = 'none';
+
+            // Update Progress
+            const progressPct = (currentQIndex / scenarios.length) * 100;
+            document.getElementById('progressBar').style.width = `${progressPct}%`;
+            document.getElementById('progressText').innerText = `${Math.round(progressPct)}%`;
+        }
+
+        function selectOption(selectedOpt) {
+            document.getElementById('questionView').style.display = 'none';
+            const fbView = document.getElementById('feedbackView');
+            fbView.style.display = 'flex';
+            
+            fbView.className = 'feedback-view'; // reset
+
+            if(selectedOpt.correct) {
+                score += 10;
+                playSfx('correct');
+                fbView.classList.add('fb-correct');
+                document.getElementById('fbTitle').innerText = "✔ VALIDASI SUKSES";
+            } else {
+                playSfx('wrong');
+                fbView.classList.add('fb-wrong');
+                document.getElementById('fbTitle').innerText = "✖ ANALISIS GAGAL";
+            }
+            
+            document.getElementById('fbDesc').innerText = selectedOpt.desc;
+        }
+
+        function checkBadges() {
+            if(currentQIndex === 3) {
+                document.getElementById('badge1').classList.add('unlocked');
+                playSfx('badge');
+            } else if (currentQIndex === 7) {
+                document.getElementById('badge2').classList.add('unlocked');
+                playSfx('badge');
+            } else if (currentQIndex === 10) {
+                document.getElementById('badge3').classList.add('unlocked');
+                playSfx('badge');
+            }
+        }
+
+        function nextQuestion() {
+            playSfx('click');
+            currentQIndex++;
+            checkBadges();
+
+            if (currentQIndex < scenarios.length) {
+                loadQuestion();
+            } else {
+                document.getElementById('progressBar').style.width = `100%`;
+                document.getElementById('progressText').innerText = `100%`;
+                setTimeout(showDebrief, 500);
+            }
+        }
+
+        function showDebrief() {
+            if(bgmInterval) clearInterval(bgmInterval); // Stop BGM
+            playTone(400, 'sine', 0.2, 0.1); setTimeout(() => playTone(600, 'sine', 0.4, 0.1), 200); // end sound
+
+            switchScreen('screenDebrief');
+            document.getElementById('finalScore').innerText = score;
+
+            const statusEl = document.getElementById('resultStatus');
+            const summaryEl = document.getElementById('feedbackSummary');
+
+            if(score >= 80) {
+                statusEl.innerText = "STATUS: LEADER SOLUTIF";
+                statusEl.style.color = "var(--green)";
+                summaryEl.innerText = "Luar biasa! Anda memahami esensi Psychological Safety dan ADKAR (Knowledge). Anda tidak lagi terjebak rasa sungkan, melainkan menggunakan komunikasi sebagai jembatan efisiensi kerja.";
+            } else if (score >= 50) {
+                statusEl.innerText = "STATUS: DALAM PENGEMBANGAN";
+                statusEl.style.color = "var(--cyan)";
+                summaryEl.innerText = "Cukup baik. Anda sudah mulai memahami pentingnya bertanya, namun masih perlu menajamkan diksi (seperti I-Statement dan validasi) agar atasan merasa lebih terbantu.";
+            } else {
+                statusEl.innerText = "STATUS: BUTUH PENYESUAIAN";
+                statusEl.style.color = "var(--red)";
+                summaryEl.innerText = "Mari kita evaluasi kembali. Masih ada kecenderungan berasumsi sendiri atau menggunakan gaya 'mengeluh' saat bingung. Ingat, bertanya dengan tepat adalah bukti Anda kompeten.";
+            }
+        }
+
+        // Init unlock for CSS variable access in JS
+        const style = getComputedStyle(document.body);
+    </script>
+</body>
+</html>
