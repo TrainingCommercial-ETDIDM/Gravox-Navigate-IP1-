@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gravox Navigate - Ruang Aman Bicara</title>
+    <title>Respons Profesional - Ruang Aman Bicara</title>
     <style>
         /* CSS Reset & Variables */
         :root {
@@ -313,7 +313,7 @@
 
         <!-- SCREEN 1: Gateway -->
         <div class="screen active" id="screenGateway">
-            <h1>GRAVOX NAVIGATE</h1>
+            <h1>RESPONS PROFESIONAL</h1>
             <h2>// Ruang Aman Bicara</h2>
             
             <div class="hook-box">
@@ -421,13 +421,13 @@
             { // 3. I-Statement (Mudah)
                 scenario: "Perusahaan mengeluarkan kebijakan baru yang terasa membatasi kenyamanan tim di lapangan. Anda butuh penjelasan cara mengaplikasikannya tanpa merusak ritme kerja.",
                 options: [
-                    { text: "Pak, aturan baru ini mencekik banget buat tim lapangan. Bisa direvisi nggak?", correct: false, desc: "Kurang tepat. Terlalu konfrontatif. Atasan akan bersikap defensif." },
+                    { text: "Pak, aturan baru ini sulit dilakukan buat tim lapangan. Bisa direvisi nggak?", correct: false, desc: "Kurang tepat. Terlalu konfrontatif. Atasan akan bersikap defensif." },
                     { text: "Saya ingin memastikan alur baru ini supaya kerjaan tim di lapangan tetap lancar. Bisa kita diskusikan cara implementasinya?", correct: true, desc: "Sempurna! (Jurus 2: I-Statement). Fokus pada 'kelancaran tugas/solusi', bukan pada komplain kenyamanan." },
                     { text: "Nggak usah diikutin aturannya, yang penting target lapangan tercapai.", correct: false, desc: "Salah. Mengabaikan SOP akan menciptakan masalah integritas di kemudian hari." }
                 ]
             },
             { // 4. Konfirmasi Ulang (Sedang)
-                scenario: "Atasan baru saja menjelaskan alur kerja secara lisan dengan sangat cepat. Anda paham sebagian besar, tapi ingin memastikan tidak ada yang terlewat.",
+                scenario: "Atasan baru saja selesai menjelaskan alur kerja secara lisan dengan sangat cepat. Anda paham sebagian besar, tapi ingin memastikan tidak ada yang terlewat.",
                 options: [
                     { text: "Berarti untuk poin X ini, langkahnya adalah A baru ke B ya Pak? Baik, saya pastikan tim jalankan sesuai instruksi.", correct: true, desc: "Tepat! (Jurus 3: Konfirmasi Ulang). Active listening memberi rasa aman kepada atasan bahwa informasinya ditangkap dengan benar." },
                     { text: "Noted Pak, siap laksanakan. (Sambil mengangguk meski dalam hati ragu).", correct: false, desc: "Kurang tepat. Ini kebiasaan lama yang berbahaya. Jika ada yang terlewat, Anda yang akan disalahkan." },
@@ -447,13 +447,13 @@
                 options: [
                     { text: "Maaf Pak, saya bodoh soal istilah Inggris, itu artinya apa ya?", correct: false, desc: "Hindari merendahkan diri sendiri ('saya bodoh'). Ini menurunkan psychological safety Anda sendiri." },
                     { text: "Diam saja. Nanti tanya teman di pantry atau Googling sendiri saja.", correct: false, desc: "Berbahaya. Teman Anda mungkin juga salah paham. Googling mungkin memberikan konteks yang berbeda dari maksud perusahaan." },
-                    { text: "Menarik Pak. Untuk memastikan eksekusi saya akurat, bolehkah dielaborasi sedikit mengenai istilah teknis tersebut dalam konteks kita?", correct: true, desc: "Sangat Profesional! Anda membingkai ketidaktahuan sebagai upaya 'memastikan eksekusi akurat'." }
+                    { text: "menarik pak, untuk memastikan pemahaman saya benar, apa boleh dijelaskan lebih lanjut istilah bahasa inggris ini pak?", correct: true, desc: "Sangat Profesional! Anda membingkai ketidaktahuan sebagai upaya 'memastikan eksekusi akurat'." }
                 ]
             },
             { // 7. Burnout & Support (Sulit)
                 scenario: "Pekerjaan menumpuk. Anda butuh support mental dari atasan agar tetap fokus dan tidak burnout, tapi Anda takut terlihat lemah/tidak kompeten.",
                 options: [
-                    { text: "Boleh kita diskusi 10 menit? Saya butuh perspektif Bapak untuk memprioritaskan task ini agar fokus saya tetap di hasil utama.", correct: true, desc: "Hebat! Anda memegang kendali atas kondisi Anda dan mengundang support dengan elegan, menggunakan kata 'prioritas' dan 'perspektif'." },
+                    { text: "Boleh kita diskusi 10 menit? Saya butuh perspektif Bapak untuk memprioritaskan task ini agar fokus saya tetap di hasil utama.", correct: true, desc: "Hebat! Anda memegang kendali atas kondisi Anda and mengundang support dengan elegan, menggunakan kata 'prioritas' dan 'perspektif'." },
                     { text: "Saya udah nyerah Pak. Beban ini terlalu berat, tolong kurangi kerjaan saya.", correct: false, desc: "Kurang tepat. Ini adalah keluhan emosional (venting) yang bisa memicu kepanikan operasional." },
                     { text: "Bekerja sampai larut malam setiap hari dalam diam, sampai akhirnya jatuh sakit.", correct: false, desc: "Sangat tidak disarankan. Menyimpan masalah sendiri justru menguras energi dan merugikan tim jangka panjang." }
                 ]
@@ -469,13 +469,13 @@
             { // 9. Perubahan Mendadak (Sulit)
                 scenario: "Terjadi perubahan arah kebijakan di tengah jalan. Atasan memberi instruksi singkat. Di kepala Anda banyak sekali pertanyaan 'Kenapa?'.",
                 options: [
-                    { text: "Pak, kok mencla-mencle sih kebijakannya? Bikin kita di bawah kerja dua kali aja.", correct: false, desc: "Hindari sikap reaktif dan menyerang. Ini menutup ruang komunikasi yang aman." },
+                    { text: "Pak, kok berubah-ubah sih kebijakannya? Bikin kita di bawah kerja dua kali aja.", correct: false, desc: "Hindari sikap reaktif dan menyerang. Ini menutup ruang komunikasi yang aman." },
                     { text: "Menghela napas panjang di depan atasan lalu berkata 'Ya udah lah, dicoba dulu aja'.", correct: false, desc: "Gesture dan nada bicara pasif-agresif ini merusak moral tim." },
                     { text: "Baik Pak, arah perubahannya sudah saya tangkap. Boleh saya tahu konteks utama perubahannya agar saya bisa bantu jelaskan ke tim di bawah?", correct: true, desc: "Luar biasa! Anda memposisikan diri sebagai partner strategis yang siap menjembatani komunikasi ke bawahan." }
                 ]
             },
             { // 10. The Ultimate Reflex (Sulit)
-                scenario: "Skenario Puncak: Atasan sedang terburu-buru mau pergi meeting di luar kantor, sambil berjalan ia mendelegasikan tugas penting ke Anda yang belum pernah Anda kerjakan.",
+                scenario: "Atasan sedang terburu-buru mau pergi meeting di luar kantor, sambil berjalan ia mendelegasikan tugas penting ke Anda yang belum pernah Anda kerjakan.",
                 options: [
                     { text: "Menahan atasan secara fisik: 'Tunggu dulu Pak, saya nggak ngerti sama sekali ini!'", correct: false, desc: "Tidak profesional. Memblokir jalan orang yang sedang buru-buru memicu emosi negatif." },
                     { text: "Baik Pak. Saya pelajari dulu garis besarnya. Kalau ada kendala fundamental, saya WA ya Pak agar eksekusi tetap jalan.", correct: true, desc: "Sempurna! Anda memberikan rasa aman bahwa 'eksekusi tetap jalan', namun tetap membuat safety net via komunikasi tertulis." },
